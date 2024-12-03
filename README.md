@@ -17,6 +17,8 @@ Predict loan defaults using machine learning methods on the Home Credit Kaggle D
 -	Application_test: contains customer information without the target variable used for testing the performance of models
 
 ### EDA: 
+<a href="home_Credit_files/home_credit_eda.rmd"><img src="https://img.shields.io/badge/RStudio-4285F4?style=for-the-badge&logo=rstudio&logoColor=white" alt="Open Notebook"></a>
+
 My EDA cleaned, transformed, and informed the direction of the project. The EDA highlighted several challenges with the data including:
 -	Class imbalance in the target variable
 -	Extreme observations in several of the independent variables
@@ -27,6 +29,8 @@ To address these limitations:
 The dataset was refined through null imputation, class balancing with SMOTE, and the incorporation of new features inspired by insights from the EDA.
 
 ### Modeling:
+<a href="home_Credit_files/Group_9_Project.ipynb"><img src="https://img.shields.io/badge/Google%20Colab-%23F9A825.svg?style=for-the-badge&logo=googlecolab&logoColor=white" alt="Open Notebook"></a>
+
 I constructed 3 models as a part of a group project. I was assigned to train SVM methods on the data. 
 From this, constructed three models:
 -	**Linear SVM**: basic linear SVM model with no adjustments to training data or hyperparameters
