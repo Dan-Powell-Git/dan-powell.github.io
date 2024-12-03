@@ -1,0 +1,396 @@
+---
+title: "Exploratory Data Analysis - Home Credit"
+author: "Dan Powell"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+      position: left
+    toc_title: "Contents"
+execute:
+  include: true
+  eval: true
+  warning: false
+  message: false
+---
+
+# Statement of Business Problem and Analysis
+
+HomeCredit offers a unique service where those without an extensive credit history may be able to get loans from the company. However, this leaves HomeCredit with a unique challenge: how to collect data on whether customers will default on their loans when they do not have a credit history. The purpose of this project is to use an alternative dataset acquired by the HomeCredit team to make accurate predictions on whether prospective customers will repay their loan. This will benefit the company by tapping into a new credit market of clients likely to repay loans without credit history, increasing revenue while also providing opportunities to first-time borrowers.
+
+However, before we begin our analysis, we must investigate the data. The primary purpose of this notebook is to examine the data provided by the HomeCredit team and to have it guide us through the exploratory data analysis phase into building potential models for customer default risk.
+
+The format of this notebook will take a flow of consciousness format, where the author proposes a question, and then answers it through data analysis - summarizing the findings of such at after each code/result block.
+
+First, we install some R packages to enable our analysis.
+
+```{r}
+# installing packages for Exploratory Data Analysis
+#install.packages("rmarkdown")
+#install.packages("installr")
+#install.packages("rtools")
+#install.packages("C50")
+#install.packages("caret")
+#install.packages("e1071")
+#install.packages("ggplot2")
+#install.packages("kernlab")
+#install.packages("knitr")
+#install.packages("lubridate")
+#install.packages("matrixStats")
+#install.packages("psych")
+#install.packages("randomForest")
+#install.packages("rminer")
+#install.packages("rpart.plot")
+#install.packages("rpart")
+#install.packages("scatterplot3d")
+#install.packages("arules") 
+```
+
+Next we load in the data into an object for further examination,
+
+```{r}
+#load in training Data
+setwd("~/Skool/MSBA Practice Project/R")
+testData <- read.csv("~/Skool/MSBA Practice Project/R/application_test.csv")
+#load in test data
+trainData <- read.csv(file = "~/Skool/MSBA Practice Project/R/application_train.csv", stringsAsFactors = TRUE)
+```
+
+# Data Exploration
+
+## Summary Statistics and examining the dataframe
+
+My first question about the data is what is the overall information about the data frame?
+
+```{r}
+#output training data to get characteristics (truncated to make notebook more readable)
+str(trainData)
+```
+
+We can see that we have a lot of variables (122 to be exact) available to us. Each of the variables varies by type, as we have ints, nums, and chr data available in our dataframe. Some of the variables also appear to be boolean values, where the variable takes on a 0 or 1 value depending on whether the condition is met. As to be expected, the train dataset does have a target variable ("target"), whereas the training set does not. The training data has 307,511 observations while the test data only has 48,744 observations, suggesting \~16% of the data exists in the test set and \~86% of the data is in the training set.
+
+My second question is, what are the summary statistics of our training dataset (contains target)?
+
+First, let's examine our target variable...
+
+```{r}
+barplot(sort(table(trainData$TARGET), decreasing = TRUE))
+summary(trainData$TARGET)
+```
+
+As to be expected, our target variable is a boolean value. A majority of the values in our target value are 0, as indicated by a median of 0 and a mean of 0.08. The barplot above also shows a similar image. Our data dictionary tells us that this value represents whether the loan was not repaid (1) or if it was repaid (0). The findings here are optimistic, as they suggest a vast majority of our customers repay their loans.
+
+### Examining Missing Values
+
+Next, we explore the missing values in our data in order to ensure that they do not interfere with our data analysis. My question here is: what values are missing and can we correct them?
+
+```{r}
+#use dplyr for data cleaning/transformations
+library(dplyr)
+
+# Calculating the percentage of missing values for each column
+missing_percentage <- round((colMeans(is.na(trainData)) * 100),2)
+#Creating a dataframe that has columns for each of the train dataset columns, and the missing percentage as their values 
+missing_table <- data.frame(Column = names(trainData), Missing_Percentage = missing_percentage)
+#using dpylr to arrange the amount of missing values in descending order 
+missing_table <- missing_table %>% arrange(desc(Missing_Percentage))
+#printing the table
+print(missing_table)
+
+```
+
+We can see that some of our variables have up to 69% of their values missing. This may cause issues when trying to create models down the line. However, since we still do not know which of these is most important or relevant to our study, we will avoid removing any columns for now. Many of these variables seem to be extraneous, as its hard to imagine how the size of a common area would influence default on a loan. But you never know! So for now, we will work around the columns with nulls rather than removing them from our dataset.
+
+In our next step, we will investigate these categorical factors to better understand them.
+
+## Investigating the Data
+
+### Categorical Variables
+
+Next, I want to look at the categorical variables to see what is contained in them.For this walkthrough, we'll just take a look at a few variables of interest: FLAG_OWN_REALITY, NAME_FAMILY_STATUS, FLAG_OWN_CAR, and NAME_EDUCATION_TYPE Before we do, let's first take care of our missing values among our factor variables to prevent errors caused by NAs. Here will simply replace the NAs with a category of "missing."
+
+```{r}
+#assign data to cleaned version for further transformations
+cleanedTrainData <- trainData
+#get list of all factor columns
+factor_cols <- names(cleanedTrainData)[sapply(cleanedTrainData, is.factor)]
+#replace the null values with a value of "missing"
+cleanedTrainData[factor_cols][is.na(cleanedTrainData[factor_cols])] <- "missing"
+```
+
+First, lets look through the the amount of observations in our data own realty.
+
+```{r}
+#create barplot to visualize distribution of FLAG_OWN_REALTY
+barplot(sort(table(cleanedTrainData$FLAG_OWN_REALTY), decreasing = TRUE))
+```
+
+From the bar graph we can see that a large proportion of our population owns realty, but there is a substantial chunk that does not. Hopefully from this we can discover whether those who own realty are more or less likely to default. Additionally, no nulls seem to appear in this data, which makes analysis slightly easier using this variable.
+
+Next, let's look at car ownership.
+
+```{r}
+#create bar plot to see distribution of the FLAG_OWN_CAR variable
+barplot(sort(table(cleanedTrainData$FLAG_OWN_CAR), decreasing = TRUE))
+```
+
+Surprisingly, despite many of our sample owning realty, the majority of our sample does not own a car. This sparks a further question - are people who own realty likely to also have a car?
+
+To examine this we convert the factors of Y and N to numeric use the corr function to see if they are correlated.
+
+```{r}
+#transform FLAG_OWN_CAR and FLAG_OWN_REALTY into numerical variables where Y = 1
+cleanedTrainData$FLAG_OWN_CAR <- as.numeric(cleanedTrainData$FLAG_OWN_CAR == "Y")
+cleanedTrainData$FLAG_OWN_REALTY <- as.numeric(cleanedTrainData$FLAG_OWN_REALTY == "Y")
+#output correlation table
+cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY")])
+
+```
+
+Here we can see a slight negative correlation between the two, which is perhaps unexpected. This is an interesting observation about our dataset, but does not offer too much to go on. For now, we will continue to examine our categorical variables.
+
+Next, we'll take a look at NAME_FAMILY_STATUS.
+
+```{r}
+#build out frequency table of NAME_FAMILY_STATUS
+freq_table <- table(cleanedTrainData$NAME_FAMILY_STATUS)
+#turn it into a dataframe
+NAME_FAMILY_STATUS_freq_table <- as.data.frame(freq_table)
+#descend the dataframe so we can easily see which groups are most common
+NAME_FAMILY_STATUS_descenddf <- NAME_FAMILY_STATUS_freq_table[order(NAME_FAMILY_STATUS_freq_table$Freq, decreasing = TRUE),]
+#output dataframe
+print(NAME_FAMILY_STATUS_descenddf)
+```
+
+Here we see that a majority of our sample is married, with smaller proportions in the single / not married and other categories. Some may suggest that married subjects may be more likely to also have a car or own property. Let's investigate these assumptions.
+
+Here we are investigating if being married correlates with having a car or owning property
+
+```{r}
+#convert married to new column that includes 1 if in married or civil marriage and 0 otherwise
+cleanedTrainData$isMarried <- ifelse(cleanedTrainData$NAME_FAMILY_STATUS %in% c("Married", "Civil marriage"), 1, 0)
+#compare to own car and own realty
+cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY", "isMarried")])
+```
+
+As perhaps expected, it seems that being married is slightly positively correlated with owning a car and owning property, with owning property having a higher correlation than owning a car. This could perhaps point to an interaction effect between the two on our target variable.
+
+Next, let's breifly investigate the gender distribution of our dataset.
+
+```{r}
+summary(cleanedTrainData$CODE_GENDER)
+```
+
+Interestingly, we have many more females in our training data than males. Also, we have 4 observations in the XNA category as well. This provides some insight into our dataset, as a larger number of the observations are female compared to male and XNA.
+
+Let's move onto investigating our next variable of interest, NAME_CONTRACT_TYPE. We'll first encode it to show a 0 or 1 depending on whether the loan is a CashLoan. Since the variable only has two values, we only need to create one binary variable - isCashLoan. 0s in this dataset will be assumed to be Revolving Loans.
+
+```{r}
+#assign cash loans to 1 in new columns - 0s will be assumed to be Revolving Loans
+cleanedTrainData$isCashLoan <- ifelse(cleanedTrainData$NAME_CONTRACT_TYPE %in% c("Cash loans"), 1, 0)
+#output correlations between the catergorical variables investigated so far
+cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY", "isMarried", "isCashLoan")])
+
+```
+
+There a few interesting observations here. There is a relatively strong correlation between owning realty and requesting a revolving loan vs. a Cash Loan, but besides a few weak correlations with our other variables, not much more information is gained at this point.
+
+Finally, our last variable of interest is NAME_EDUCATION_TYPE.
+
+```{r}
+as.data.frame(summary(cleanedTrainData$NAME_EDUCATION_TYPE))
+
+```
+
+We can see there are two relatively large groups here that can segment our population. Those with a maximum education of a secondary education and those with a maximum degree of a secondary education.
+
+In order to observe the differences between these two large and potentially different groups, we will split this into two major categories: morethanSecondaryEd, which contains all observations that reported a Higher Education level than secondary, and SecondaryorLowerEd, which gives a 1 to observations that reported a secondary education as their highest level of education or lower.
+
+```{r}
+#creating variable for more than secondary education
+cleanedTrainData$morethanSecondaryEd <- ifelse(cleanedTrainData$NAME_EDUCATION_TYPE %in% c("Higher education", "Incomplete higher", "Academic degree"), 1, 0)
+#creating variable for secondary or lower education 
+cleanedTrainData$SecondaryorLowerEd <- ifelse(cleanedTrainData$NAME_EDUCATION_TYPE %in% c("Secondary / secondary special", "Lower secondary"), 1, 0)
+#output correlations
+print(cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY", "isMarried", "isCashLoan", "morethanSecondaryEd", "SecondaryorLowerEd")]))
+
+```
+
+When compared to other categorical variables using correlation, we can see that having a secondary education or lower level of education is negatively correlated with owning a car, but is higher correlated with requesting a cash loan over a revolving loan. Whereas a more than secondary education level makes is more correlated with car ownership and is more correlated with requesting a revolving loan than a cash loan.
+
+But how do these variables compare to our target variable? Let's take a look.
+
+```{r}
+print(cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY", "isMarried", "isCashLoan", "morethanSecondaryEd", "SecondaryorLowerEd", "TARGET")]))
+```
+
+So far, none of our categorical variables have a exceptionally strong relationship with the target variable. There are some slight correlations, like the positive correlation between the target and having less than a secondary education and requesting a cash loan over a revolving loan. However some variables, like owning realty, are barely correlated with the target variable at all. Before moving on, lets check to see if by combining some of our stronger variables, we are able to produce a strong correlation with our target variable.
+
+First, let's see what percent of our sample has this combination.
+
+```{r}
+# Specify the columns to check
+check_cols <- c("morethanSecondaryEd", "isMarried", "FLAG_OWN_CAR")
+
+# Create a new column indicating if all specified columns have a value of 1
+cleanedTrainData <- cleanedTrainData %>%
+  mutate(
+    morethanSecondaryEdisMarriedFLAG_OWN_CAR= rowSums(select(., all_of(check_cols)) == 1) == length(check_cols)
+  )
+#output the proportion of our total dataset that falls into this group
+summary(cleanedTrainData$morethanSecondaryEdisMarriedFLAG_OWN_CAR)
+
+```
+
+Here we can see there is a sizable number of observations who meet these categories, about 10%. Knowing that this may be a valuable combination of variables due to it representing a large segment of the population, let's compare it to the target variable, along with our other categorical variables
+
+```{r}
+print(cor(cleanedTrainData[c("FLAG_OWN_CAR", "FLAG_OWN_REALTY", "isMarried", "isCashLoan", "morethanSecondaryEd", "SecondaryorLowerEd", "morethanSecondaryEdisMarriedFLAG_OWN_CAR", "TARGET")]))
+```
+
+Despite combing the three variables of interest, we can see that it still is not correlated with the target variable at a relatively high level. While there are many more categorical variables we can investigate, let's move onto some of our numerical variables.
+
+### Numerical Variables of Interest
+
+First let's take a look at our numerical variables to pick some out that may be of interest. However, before doing so, let's take a look at the distributions of these characteristics. Most of the variables of interest seemed to have relatively normal values, such as those found in DAYS_BIRTH.
+
+```{r}
+#output summary of days birth, adjusted to display in positive years
+summary(cleanedTrainData$DAYS_BIRTH/-365)
+```
+
+However, some of the variables have outliers that stand out. One of these is DAYS_EMPLOYED.
+
+```{r}
+#output summary of days employeed, adjusted to show years
+summary(cleanedTrainData$DAYS_EMPLOYED/-365)
+```
+
+This definitely raises alarm bells. Not only is the minimum observation implying a length of employment of a thousand years, it's basically stating that starting at the time of the survey, they *will* be employed for the next 1000 years. While I certainly hope this isn't the case, we will remove this and other extreme observations from the data set to prevent bias caused by outliers. First, we must determine what qualifies as an extreme observation.
+
+```{r}
+#output histogram of days employed before cleaning 
+hist(cleanedTrainData$DAYS_EMPLOYED, main = "Histogram of Days Employed", xlab = "DAYS_EMPLOYED", ylab = "Frequency")
+```
+
+Perhaps unexpected, there is a large number of observations that fall in this extremely high group. This suggests that perhaps we should not remove these observations from our dataset, but instead perhaps categorize them into their own group. Let's then compare this group to see if perhaps this misreporting is intentional an attempt to hide their length of employement, which theory would suggest may also make them more likely to default on loans.
+
+```{r}
+#create an anomalous group - where days employed exceeds 100 years
+cleanedTrainData$DAY_EMPLOYED_ANOM <- ifelse(cleanedTrainData$DAYS_EMPLOYED >= 36500, 1, 0 )
+#display correlation between this group and the target 
+print(cor(cleanedTrainData[c("DAY_EMPLOYED_ANOM", "TARGET")]))
+
+```
+
+Contrary to what we hypothesized, there is actually a slightly negative correlation between this group and loan default. This perhaps suggest that this field may be compromised by a data collection error rather than deceitful behavior. However, we still may be able to gain insight from this column by removing the population with the outlier value.
+
+```{r}
+#remove the anomalous groups from the data
+cleanedTrainData$DAYS_EMPLOYED[cleanedTrainData$DAYS_EMPLOYED > 36500] <- NA
+#output histogroam of days employed, adjusted into years
+hist(cleanedTrainData$DAYS_EMPLOYED /365, main = "Histogram of DAYS_EMPLOYED", xlab = "DAYS_EMPLOYED", ylab = "Frequency")
+```
+
+When adjusted for years, the days employed histogram looks much more like something we would expect from years of employment.
+
+Now, let's take a look to see if there are any other numerical variables that we should investigate. To do this, we compare the target variable to all of our numerical variables.
+
+```{r}
+# Select all numerical columns, excluding the target variable
+numeric_cols <- names(cleanedTrainData)[sapply(cleanedTrainData, is.numeric)]
+numeric_cols <- numeric_cols[numeric_cols != "target_variable"]
+#removing null rows for now
+clean_data_no_nulls <- na.omit(cleanedTrainData)
+
+# Calculate the correlation between each numerical variable and the target variable
+correlations <- cor(clean_data_no_nulls[numeric_cols], clean_data_no_nulls$target_variable)
+# Create a data frame with variable names and their corresponding correlation coefficients
+correlation_df <- data.frame(correlations)
+correlation_df$Variable <- rownames(correlation_df)
+rownames(correlation_df) <- NULL
+#make a dataframe that contains the variable and its correlation with the target
+target_column <- correlation_df[c("Variable", "TARGET" )]
+#descend the dataframe by correlation with target
+target_column_desc <- target_column[order(target_column$TARGET, decreasing = TRUE), ]
+#print the dataframe
+print(target_column_desc)
+
+```
+
+From the output, we can see a strong correlation between DAYS_EMPLOYED and the target variable. Other strong positive variables include: REGION_RATING_CLIENT_W_CITY, DAYS_EMPLOYED, REGION_RATING_CLIENT, SecondaryorLowerEd, and FLAG_DOCUMENT_3. Additionally, EXT_SOURCE_3, 2, and 1; plus our own variable for more than secondary education have relatively strong negative correlations. We also have four variables with N/As. This could be due to the need for data normalization or issues with null values. For now, we will leave these alone and continue to investigate some of the other variables.
+
+Before moving on, lets see the distribution of some of this characteristics - starting with REGION_RATING_CLIENT_W_CITY and REGION_RATING_CLIENT. I am curious to see the distribution and relationship between the values in these variables so here we will use correlation as well as the variable summary to examine these.
+
+```{r}
+#summaries for both variables
+summary(cleanedTrainData$REGION_RATING_CLIENT_W_CITY)
+summary(cleanedTrainData$REGION_RATING_CLIENT)
+#correlation table between the two variables
+cor(cleanedTrainData[c("REGION_RATING_CLIENT_W_CITY", "REGION_RATING_CLIENT",  "TARGET")])
+```
+
+From the summary statistics and correlation tables, we can see that the REGION_RATING_CLIENT and REGION_RATING_CLIENT from city are essentially the same and share a nearly identical correlation with the target variable. This is helpful to know as it means we may not have to include both metrics in our final model. A good next step would be to investigate these in the data dictionary to see if they are truly interchangeable in regards to their definitions.
+
+The last numerical variable we'll investigate is DAYS_BIRTH, as this is our numerical variable with the strongest correlation with the target variable.
+
+```{r}
+#Getting summary statistics for days birth and dividing by -365 as the units are expressed in days and we 
+# want to analyze the data in years when looking for outliers.
+summary(cleanedTrainData$DAYS_BIRTH/-365)
+
+```
+
+Okay, so we don't have to worry about removing any outliers as the value in the max and min make sense given our clientele. Let's look into the distribution of our DAYS_BIRTH variable.
+
+```{r}
+hist(cleanedTrainData$DAYS_BIRTH /365, main = "Histogram of DAYS_BIRTH", xlab = "Years Old", ylab = "Frequency")
+```
+
+The frequency distribution visualized also shows values that align with what we may expect in our sample. My next question is if different ages have different relationships with the target variable. We will make a function to bin each of these into groups separated by 5 years. Then, we compare each bin with the target variable and see if any age group has a higher or lower risk of default.
+
+```{r}
+#create column for years old instead of days old for readability 
+cleanedTrainData$YearsOld <- cleanedTrainData$DAYS_BIRTH / -365
+#divide the age data in bins for every 5 years
+cleanedTrainData$age_group <- cut(cleanedTrainData$YearsOld, breaks = seq(min(cleanedTrainData$YearsOld), max(cleanedTrainData$YearsOld, na.rm = TRUE), by = 5))
+#group the databy age group and summarize the mean value of the target variable for that group
+grouped_data <- cleanedTrainData %>% group_by(age_group) %>% summarize(mean_target = mean(TARGET, na.rm = TRUE))
+#descend by group
+grouped_data_desc <- grouped_data[order(grouped_data$mean_target, decreasing = TRUE), ]
+
+#print dataframe from grouped data
+print(grouped_data_desc)
+```
+
+We can see that there is a clear descending correlation between age groups. The younger groups are highly correlated with a the target whereas older groups are less highly correlated. This could point to age being a major factor in determining whether to expect an applicant to default.
+
+## Summary of Key Findings
+
+Through our EDA we have been able to pick out a few key findings. First, and perhaps most recently in memory, we have the age_group variable which seems to be very promising to identify applicants most likely to default as younger applicants clearly have a higher risk of default.
+
+```{r}
+library(ggplot2)
+ggplot(grouped_data_desc, aes(x = age_group, y = mean_target)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Correlation of Age Bins with Target Variable",
+       x = "Age Bin",
+       y = "Correlation Coefficient") +
+  theme_minimal() +
+  geom_text(aes(label = round(mean_target, 2)), vjust = -0.5)  # Add text labels
+```
+
+Additionally, we can see that education clearly has a significant impact on our target variable as well, as demonstrated in the correlation table below.
+
+```{r}
+
+print(cor(cleanedTrainData[c("SecondaryorLowerEd", "TARGET")]))
+
+```
+
+We also have a few variables that are worth investigating further due to their high positive or negative correlations with the target, including REGION_RATING_CLIENT_W_CITY, DAYS_EMPLOYED, REGION_RATING_CLIENT, SecondaryorLowerEd, and FLAG_DOCUMENT_3. And for negative correlations we should include EXT_SOURCE_3, 2, and 1; plus our own variable (more than secondary education) in further investigation and perhaps even our final model.
+
+However, our data may need more cleaning. We discovered in our EDA that the many of the variables are missing data. Additionally, we may be missing some of the correlations in this exploratory analysis as we removed null rows when looking through our numerical values instead of replacing them with a median or using another imputation method. Nonetheless, the exploratory data analysis done so far at least offers us a place to start when it comes to training some models based off of what we know about the data.
