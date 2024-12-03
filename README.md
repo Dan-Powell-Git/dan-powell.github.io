@@ -1,5 +1,3 @@
-[LinkedIn](https://www.linkedin.com/in/dan-powell-13870a96/)
-
 # Portfolio
 
 ## Home Credit Default Prediction
