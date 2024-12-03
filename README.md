@@ -1,8 +1,9 @@
 # Portfolio
 
-<img src ="assets/img/Home-Credit-logo.jpg" width = "20%" >
 
-## Home Credit Default Prediction
+## Home Credit Default Prediction 
+
+<img src ="assets/img/Home-Credit-logo.jpg" width = "20%" > 
 
 ### Summary of Business Problem: 
 Identify customers with a high risk of default on their loans to improve repayment rates at HomeCredit while allowing for disadvantaged groups to receive loans to jumpstart
