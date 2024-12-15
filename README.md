@@ -1,5 +1,55 @@
 # Portfolio
 
+## R User Demographics
+
+### Files
+Written Report
+<a href="home_Credit_files/home_credit_eda.rmd"><img src="https://img.shields.io/badge/Adobe%20Acrobat%20Reader-EC1C24.svg?style=for-the-badge&logo=Adobe%20Acrobat%20Reader&logoColor=white" alt="Open Report"></a>
+
+R Notebook File
+<a href="home_Credit_files/home_credit_eda.rmd"><img src="https://img.shields.io/badge/RStudio-4285F4?style=for-the-badge&logo=rstudio&logoColor=white" alt="Open Notebook"></a>
+
+### Summary of Business Problem: 
+The R user base is experiencing a decrease. To reverse this trend, we must identify potential users within the developer community who may be interested in adopting R
+
+### Objective: 
+Identify potential users of R to capitalize on the language's strengths and opportunities for growth.
+
+### Data: 
+- 2024 Stack Overflow Developer Survery: Developers who indicated residing in the US (~11,000 Total Sample Size)
+
+### Methods:
+- PCA and hierarchical clustering to gain a comprehensive understanding of the Stack Overflow Developer Survey.
+- 80-20 Train-Test splits set before each model to test model performance
+- SMOTE (Syntehtic Minority Oversampling Technique) employed on training data to reduce class bias in predictive models
+- Lasso binomial regression to reduce dimensionality and identify significant variables associated with R interest.
+  - 5-fold cross validation to identify optimal lambda value
+- Dimensionality reduction for XGBoost and Neural Net models to improve model generalization and data collection efficiency.
+- XGBoost Model to increase robustness of the analyses and produce PDP and Feature Importance charts
+  - Randomly sampled training data for 7,000 observations
+  - Tuned learning rate, number of trees, and depth through grid search on two levels
+  - 5-fold cross validation 
+- Softmax neural network to improve the model's generalization ability and capture complex, non-linear relationships within the data
+  - Conducted on small sample size of 500 observations 
+  - 5-fold cross validation
+  - Fit model on combination of 42 different hyperparameters for decay and size to minimize error
+  - AVNnet method utilized to reduce overfitting
+
+### Results:
+- Produced dendrograms for Stack Overflow Developer Survey information with clear splits along total compensation, experience, age, and other characteristics.
+- Produced 3 high-performing predictive models evaluated on performacne metrics of F1 scores and accuracy.
+- Identified key characteristics of R's target audience and those who may be less inclined to adopt the language
+
+### Challenges
+- Data availability: Retraining the model can only be done on the cadence of the stack overflow developer survey, which may not keep up with live trends in programming
+- Data Capture: Stack overflow data is anonymous, providing a challenge on utilizing the predicitve models directly
+- Potential for Overfitting: The high performance in both accuracy and F1 score may suggest that the models are overfitting the training data.
+
+### Future Considerations:
+- Improve model generalizability and robustness through additional classification models such as Adaboost and SVM
+- Check for interaction effects among the variables to prevent bias in feature importance
+- Develop data collection methods to complement our models and gather insights into user interest.
+
 
 ## Home Credit Default Prediction 
 
