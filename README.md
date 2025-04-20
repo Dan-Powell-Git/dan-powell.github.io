@@ -23,7 +23,7 @@ Swire provided us with data on their customer profiles, including attributes suc
 
 As my part of the project, I utilized various few analytical methods to recommend a strategy to Swire, including:
 
-- DBSCAN Clustering: Utilized Malahnbois distance to create clusters of customers based on their characteristics
+- DBSCAN Clustering: Utilized Mahalanobis distance to create clusters of customers based on their characteristics and growth metrics
   - Analyzed the proportions of various characteristics in these clusters, including proportions of customers who grew from 2023 to 2024
 - Correlation Analysis: Compared the proportion of customers who grew in each cluster to the proportion utilizing various order channels
 - T-Learner for Causal Inference: Utilized a T-learner to get individual treatment effects of specific order channels on customers
