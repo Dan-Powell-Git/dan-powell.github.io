@@ -36,7 +36,7 @@ From our analysis, we found that Sales Representatives were the frequent order c
 
 ### Challenges
 
-We ran into a number of challenges throughout the development of this project. At first, we leaned heavily on correlation analysis to identify promising order channels for Swire to focus on. But due to the smaller dataset used for clustering and the lack of a clear uplift metric to present, we ended up pivoting to calculating average treatment effects using causal inference. After testing multiple models, we ultimately landed on the T-learner to estimate individual treatment effects. Fortunately, despite the shift in direction, everyone in the group—including myself—remained engaged and proactive, and we were able to turn things around and deliver meaningful metrics that Swire can actually apply in practice.
+We ran into a number of challenges throughout the development of this project. At first, we leaned heavily on correlation analysis to identify promising order channels for Swire to focus on. But due to the smaller dataset used for clustering and the lack of a clear uplift metric to present, we ended up pivoting to calculating average treatment effects using causal inference. After testing multiple models, we ultimately landed on the T-learner to estimate individual treatment effects. Fortunately, despite the shift in direction, everyone in the group remained engaged and proactive, and we were able to turn things around and deliver meaningful metrics that Swire can actually apply in practice.
 
 ### Future Considerations 
 
