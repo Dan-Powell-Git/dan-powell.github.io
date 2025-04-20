@@ -4,9 +4,11 @@
 
 ### Files
 Exploratory Data Analysis Notebook
+
 <a href="CapStone Notebooks/EDA_Dan_Powell.html"><img src="https://img.shields.io/badge/RStudio-4285F4?style=for-the-badge&logo=rstudio&logoColor=white" alt="Open Notebook"></a>
 
 Modeling Notebook 
+
 <a href="CapStone Notebooks/Dan_Modeling (4).html"><img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Open Notebook"></a>
 
 ### Summary of Business Problem
