@@ -1,5 +1,47 @@
 # Portfolio
 
+## Swire Coca Cola - Capstone Project
+
+### Files
+Exploratory Data Analysis Notebook
+<a href="CapStone Notebooks/EDA_Dan_Powell.html"><img src="https://img.shields.io/badge/RStudio-4285F4?style=for-the-badge&logo=rstudio&logoColor=white" alt="Open Notebook"></a>
+
+Modeling Notebook 
+<a href="CapStone Notebooks/Dan_Modeling (4).html"><img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54" alt="Open Notebook"></a>
+
+### Summary of Business Problem
+
+For this project, we partnered with Swire Coca-Cola, a bottling distributor operating across the United States. Their goal was to identify which customers should be served via Red Truck—Swire’s more expensive delivery method that offers added services and helps build stronger customer relationships—versus White Truck, which is more cost-effective but limits Swire’s direct engagement with the customer. Swire is exploring the idea of implementing a threshold-based approach to determine which customers should remain on or be moved to the Red Truck channel.
+
+### Objective
+
+Swire provided us with data on their customer profiles, including attributes such as frequent order type (e.g., Sales Representative, Online Platform), trade channel (e.g., Wellness, School), gallons ordered in 2023 and 2024, and various other descriptive metrics. Using this data, Swire asked us to develop a new method for determining whether a customer should be assigned to the Red or White Truck channel—moving beyond the basic gallons-per-year threshold they had previously relied on.
+
+### Methods
+
+As my part of the project, I utilized various few analytical methods to recommend a strategy to Swire, including:
+
+- DBSCAN Clustering: Utilized Malahnbois distance to create clusters of customers based on their characteristics
+  - Analyzed the proportions of various characteristics in these clusters, including proportions of customers who grew from 2023 to 2024
+- Correlation Analysis: Compared the proportion of customers who grew in each cluster to the proportion utilizing various order channels
+- T-Learner for Causal Inference: Utilized a T-learner to get individual treatment effects of specific order channels on customers
+- Random Forest for Feature Importance: Analyzed which features contrinuted the most to average treatment effect calculated by the T-Learner
+- Lasso Regression for magnitude and direction of variables: Analyzed Magnitude and direction of each of the characteristics of the customer to estimate impact on treatment effect
+
+### Results
+
+From our analysis, we found that Sales Representatives were the frequent order channel with the highest conditional average treatment effect across the customer base. We also estimated that if all customers not currently using the Sales Rep channel were to switch, there would be an average uplift of just over nine gallons per year. Additionally, the coefficients from our Lasso model helped identify specific customer segments—namely wellness, middle schools, and books and office—that saw the most improvement when a Sales Rep was involved.
+
+### Challenges
+
+We ran into a number of challenges throughout the development of this project. At first, we leaned heavily on correlation analysis to identify promising order channels for Swire to focus on. But due to the smaller dataset used for clustering and the lack of a clear uplift metric to present, we ended up pivoting to calculating average treatment effects using causal inference. After testing multiple models, we ultimately landed on the T-learner to estimate individual treatment effects. Fortunately, despite the shift in direction, everyone in the group—including myself—remained engaged and proactive, and we were able to turn things around and deliver meaningful metrics that Swire can actually apply in practice.
+
+### Future Considerations 
+
+Based on our analysis, we recommend two actions for Swire. First, target customers under the 400-gallon threshold highlighted here by shifting them to the Sales Rep Frequent Order channel, which shows strong potential to boost their performance.
+
+However, and perhaps more importantly, we suggest Swire adopt our method of estimating treatment effects across customers to identify which interventions — whether specific sales reps or order channels — yield positive outcomes. This approach enables Swire to proactively tailor strategies to retain and grow customers, rather than disengaging from those who could thrive with the right support.
+
 ## R User Demographics
 
 ### Files
