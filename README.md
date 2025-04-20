@@ -44,6 +44,10 @@ Based on our analysis, we recommend two actions for Swire. First, target custome
 
 However, and perhaps more importantly, we suggest Swire adopt our method of estimating treatment effects across customers to identify which interventions — whether specific sales reps or order channels — yield positive outcomes. This approach enables Swire to proactively tailor strategies to retain and grow customers, rather than disengaging from those who could thrive with the right support.
 
+### Lessons Learned
+
+Through this project, I learned how to combine multiple analytical methods in sequence to generate more meaningful business insights. Rather than stopping at clustering analysis, I followed it with correlation analysis to identify which controllable factors were most associated with growth. I then took it a step further by using a T-learner to estimate individual treatment effects, and applied a Lasso model to quantify both the magnitude and direction of each characteristic’s impact on that effect. This project allowed me to bring together concepts from multiple courses I’ve taken at the University of Utah and present Swire with a well-supported, actionable solution grounded in data.
+
 ## R User Demographics
 
 ### Files
