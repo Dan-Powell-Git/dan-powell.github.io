@@ -48,6 +48,54 @@ However, and perhaps more importantly, we suggest Swire adopt our method of esti
 
 Through this project, I learned how to combine multiple analytical methods in sequence to generate more meaningful business insights. Rather than stopping at clustering analysis, I followed it with correlation analysis to identify which controllable factors were most associated with growth. I then took it a step further by using a T-learner to estimate individual treatment effects, and applied a Lasso model to quantify both the magnitude and direction of each characteristic’s impact on that effect. This project allowed me to bring together concepts from multiple courses I’ve taken at the University of Utah and present Swire with a well-supported, actionable solution grounded in data.
 
+## A Pipeline for Running Gait Analysis
+
+### Files 
+
+PowerPoint Presentation
+
+Write Up
+
+Jupyter Notebook
+
+### Summary of Business Problem 
+
+Inspired by a recent episode of Data Skeptic where a biologist disccused attaching IMU devices to small animals as a way to observe their behavior without the scientists' phyiscal presence influncing their behavior, we wanted to apply this concept to obsevring running gait during an athlete's run. This was designed to overcome the challenges of traditional gait analysis, which are short in duration, likely influenced by the observer (self-consicousness of gait patterns more likely to occur during traditional gait analysis), and potential bias of the observer towards certain modalities. 
+
+### Objective
+
+With this in mind, we wanted to create a data pipeline that could be used both to capture streaming data from devices on the user - using a combination of machine learning and simple statistics to determine abnormalities in gait and to both track these abnnormailities and inform the user when they occur so they can make adjustments and avoid injury. This data would then be combined with the summary statistics for the activity to provide both a granular and hositic view of the activity for analysis and ulitimately injury prevention.
+
+### Challenges
+
+We initally designed the pipeline to use simulated IMU data from a study performed in 2015 and enrich this data with summary statistics from Garmin. However, due to a change in the terms of use from Garmin's API and the inability to tie the data from my runs on Strava to the study's data had us pivot directions. Instead, we utilized the GarminDB package to load in data from Garmin, which was able to provide more a more simplified metric (cadence) in a streaming fashion rather than exact IMU measurements. Even so, there is plenty of research to suggest that injury risk is heavily influenced by a lower cadence at higher speeds, meaning we could still detect injury risk whule streaming. The Garmin data was, however, able to exactly replicate the data we were looking to acquire from Strava - so the issue of summary and lap-level data was resolved completely without compromise. 
+
+### Data
+
+- My Garmin Activity Data from March 1 to March 20, with a 13-mile run selected for streaming simulation
+
+### Final Constructed Pipeline
+
+The final pipeline was constructed as such:
+
+<img of pipeline>
+
+### Technologies Used
+
+- Pyspark for streaming simulation and in-flight aggregations
+- Google Cloud Storage Bucket for file storage
+- Pandas for dataframe manipulation
+- Matplotlib for visualization creation
+- Folium for Map Creation
+- Google Colab for collaboration 
+
+### Ouputs of Pipeline
+
+- Working layered map of running route with layers for heartrate, cadence, and speed
+- Simple visualizations on average heart rate over time  
+- Datasets for streaming data, abnormality windows from streaming data, and summary statistics for holistic analysis for future analysis
+
+
 ## R User Demographics
 
 ### Files
