@@ -52,11 +52,15 @@ Through this project, I learned how to combine multiple analytical methods in se
 
 ### Files 
 
-PowerPoint Presentation
+Presentation
+<a href="finalproj-git/video2288915803.mp4"><img src="https://img.shields.io/badge/Presentation-mp4 file-green" alt="Open Notebook"></a>
 
 Write Up
+<a href="finalproj-git/annotated-DanPowell_ChrisHeld_Data_Engineering_Final_Project.docx.pdf"><img src="https://img.shields.io/badge/Write Up-PDF File-red" alt="Open PDF"></a>
 
-Jupyter Notebook
+Jupyter Notebook 
+<a href="finalproj-git/DE_Final_Project.html"><img src="https://img.shields.io/badge/Google_Colab-F9AB00?style=plastic&logo=google-colab&logoColor=white" alt="Open Notebook"></a>
+
 
 ### Summary of Business Problem 
 
@@ -78,7 +82,7 @@ We initally designed the pipeline to use simulated IMU data from a study perform
 
 The final pipeline was constructed as such:
 
-<img of pipeline>
+<img src="finalproj-git/FinalPipeline.jpg" alt="Final Pipeline"> 
 
 ### Technologies Used
 
